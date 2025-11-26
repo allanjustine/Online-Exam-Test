@@ -5,6 +5,7 @@
             v-bind:id="'que' + index"
             v-for="(question, index) in questions"
             :key="index + uuid"
+            v-show="count === index + 1"
         >
             <div class="row">
                 <form
@@ -19,7 +20,7 @@
                         type="hidden"
                         name="queIndex"
                         class="form-control queIndx"
-                        v-bind:value="index + 2"
+                        v-bind:value="index + 1"
                     />
                     <div class="row" v-if="set > 1">
                         <h3 style="color: white" v-html="question.set"></h3>
@@ -126,17 +127,23 @@
                                 ></textarea>
                             </div>
                         </div>
-                        <div v-if="!question.choices.length" class="q-block">
+                        <div
+                            v-if="
+                                !question.choices ||
+                                parsedChoices(question.choices).length === 0
+                            "
+                            class="q-block"
+                        >
                             <p style="font-size: 1.2rem; color: gray">
                                 Choices
                             </p>
                         </div>
                         <div
                             class="choices-box"
-                            v-if="question.type == 'multiple'"
+                            v-if="question.type === 'multiple'"
                         >
                             <div
-                                v-for="(choices, indx) in JSON.parse(
+                                v-for="(choice, indx) in parsedChoices(
                                     question.choices
                                 )"
                                 :key="indx"
@@ -144,14 +151,13 @@
                                 <label class="form-label">
                                     <input
                                         class="radioBtn"
-                                        v-bind:id="'radio' + indx"
                                         type="radio"
-                                        v-bind:value="choices"
+                                        :id="'radio' + indx"
+                                        :value="String(choice)"
                                         v-model="result.user_answer"
-                                        aria-checked="false"
                                     />
                                     <span style="font-size: 1.4rem">{{
-                                        choices
+                                        choice
                                     }}</span>
                                 </label>
                             </div>
@@ -168,10 +174,12 @@
                                     class="btn btn-block nextbtn btn-primary"
                                     @click="status('save')"
                                     :disabled="isSelected"
-                                    style="margin-top: 5px;"
+                                    style="margin-top: 5px"
                                 >
-                                    <span v-if="fcount != questions.length">Next</span><span v-else>Save</span>
+                                    <span v-if="!isLast">Next</span>
+                                    <span v-else>Save</span>
                                 </button>
+
                                 <button
                                     type="submit"
                                     class="btn btn-block btn-warning nextbtn"
@@ -180,29 +188,32 @@
                                 >
                                     <span>Review</span>
                                 </button>
+
                                 <button
                                     type="submit"
-                                    v-if="fcount != questions.length"
+                                    v-if="!isLast"
                                     class="btn btn-block nextbtn btn-danger"
                                     @click="status('skipped')"
-                                    :disabled="isDisabled"
+                                    :disabled="isSkipDisabled"
                                 >
                                     <span>Skip</span>
                                 </button>
+
                                 <button
                                     type="submit"
                                     v-if="
-                                        fcount == questions.length &&
+                                        isLast &&
                                         topic_id != topics[topics.length - 1]
                                     "
                                     class="btn btn-block submitBtn btn-success"
                                 >
                                     <span>Proceed</span>
                                 </button>
+
                                 <button
                                     type="submit"
                                     v-if="
-                                        fcount == questions.length &&
+                                        isLast &&
                                         topic_id == topics[topics.length - 1]
                                     "
                                     class="btn btn-block submitBtn btn-success"
@@ -220,50 +231,99 @@
                                 class="glyphicon glyphicon-chevron-down"
                             ></span>
                         </h5>
-                        <div class="sidepanel">
-                            <div class="sidebar">
+                        <div class="sidepanel" :style="{ display: openOnNext && 'block' }">
+                            <div
+                                class="sidebar"
+                                :style="{
+                                    width: 'fit-content',
+                                }"
+                            >
                                 <h5 style="color: gray; font-weight: 800">
                                     Question
                                 </h5>
                                 <div
-                                    style="display: inline-block"
+                                    :style="{
+                                        display: 'inline-block',
+                                        width: 'fit-content',
+                                    }"
                                     v-for="(basestats, indx) in stats"
                                     :key="indx"
                                 >
-                                    <input
-                                        type="submit"
+                                    <button
+                                        type="button"
                                         class="base prebtn"
-                                        v-bind:style="{
+                                        :style="{
                                             backgroundColor:
                                                 baseColors[basestats.status],
+                                            cursor:
+                                                basestats.status === 'save' &&
+                                                'not-allowed',
                                         }"
-                                        :disabled="basestats.status === 'blank'"
+                                        @click="goToQuestion(indx)"
+                                        :disabled="
+                                            basestats.status === 'blank' ||
+                                            basestats.status === 'save'
+                                        "
                                         :value="indx + 1"
-                                    />
+                                    >
+                                        {{ indx + 1 }}
+                                    </button>
                                 </div>
                                 <hr style="border-color: gray; width: 80%" />
-                                <div class="row">
-                                    <div
-                                        class="col-md-6"
-                                        style="text-align: center"
-                                    >
-                                        <div>
+                                <div
+                                    style="
+                                        text-align: center;
+                                        display: flex;
+                                        flex-direction: row;
+                                        justify-items: center;
+                                        align-items: start;
+                                        gap: 20px;
+                                    "
+                                >
+                                    <div>
+                                        <div
+                                            style="
+                                                display: flex;
+                                                gap: 10px;
+                                                align-items: center;
+                                            "
+                                        >
                                             <div class="span-ans"></div>
-                                            <p class="inline">Answered</p>
+                                            <span class="inline">Answered</span>
                                         </div>
-                                        <div>
+                                        <div
+                                            style="
+                                                display: flex;
+                                                gap: 10px;
+                                                align-items: center;
+                                            "
+                                        >
                                             <div class="span-rev"></div>
-                                            <p class="inline">For Review</p>
+                                            <span class="inline"
+                                                >For Review</span
+                                            >
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <div>
+                                    <div>
+                                        <div
+                                            style="
+                                                display: flex;
+                                                gap: 10px;
+                                                align-items: center;
+                                            "
+                                        >
                                             <div class="span-unans"></div>
-                                            <p class="inline">Skipped</p>
+                                            <span class="inline">Skipped</span>
                                         </div>
-                                        <div>
+                                        <div
+                                            style="
+                                                display: flex;
+                                                gap: 10px;
+                                                align-items: center;
+                                            "
+                                        >
                                             <div class="span-nvw"></div>
-                                            <p class="inline">Not View</p>
+                                            <span class="inline">Not View</span>
                                         </div>
                                     </div>
                                 </div>
@@ -327,7 +387,7 @@ export default {
             topics: 0,
             count: 1,
             slug: "",
-            fcount: 1,
+            // fcount: 1,
             set: 0,
             baseColors: {
                 save: "#46D96C",
@@ -344,25 +404,98 @@ export default {
                 qIndex: null,
                 status: "",
             },
+            openOnNext: false
         };
     },
 
     created() {
         this.fetchQuestions();
     },
+    watch: {
+        "result.qIndex"(newIndex) {
+            if (
+                Number.isInteger(newIndex) &&
+                newIndex >= 0 &&
+                newIndex < this.questions.length
+            ) {
+                this.result.user_answer =
+                    this.questions[newIndex].user_answer ?? null;
+                this.result.answer_exp =
+                    this.questions[newIndex].answer_exp ?? "";
+            }
+        },
+        count(newCount) {
+            const idx = newCount - 1;
+            if (idx >= 0 && idx < this.questions.length) {
+                this.result.qIndex = idx;
+                this.result.user_answer =
+                    this.questions[idx].user_answer ?? null;
+                this.result.answer_exp = this.questions[idx].answer_exp ?? "";
+            }
+        },
+    },
 
     methods: {
+        goToQuestion(index) {
+            if (index >= 0 && index < this.questions.length) {
+                this.count = index + 1;
+                this.result.qIndex = index;
+                this.result.user_answer =
+                    this.questions[index].user_answer ?? null;
+                this.result.answer_exp = this.questions[index].answer_exp ?? "";
+
+                const currentActive =
+                    document.querySelector(".myQuestion.active");
+                if (currentActive) currentActive.classList.remove("active");
+
+                const target = document.getElementById("que" + index);
+                if (target) target.classList.add("active");
+            }
+        },
+        parsedChoices(raw) {
+            if (!raw) return [];
+            try {
+                const choices = typeof raw === "string" ? JSON.parse(raw) : raw;
+                return choices.map((c) => String(c));
+            } catch (e) {
+                console.error("CHOICES JSON ERROR:", raw);
+                return [];
+            }
+        },
         fetchQuestions() {
             axios
                 .get(`${this.$props.topic_id}/quiz/${this.$props.topic_id}`)
                 .then((response) => {
-                    this.questions = response.data.questions;
+                    this.questions = response.data.questions.map((q) => {
+                        q.user_answer =
+                            q.user_answer != null
+                                ? String(q.user_answer)
+                                : null;
+                        q.answer_exp = q.answer_exp ?? "";
+                        try {
+                            q.choices =
+                                typeof q.choices === "string"
+                                    ? JSON.parse(q.choices)
+                                    : q.choices;
+                        } catch (e) {
+                            q.choices = q.choices || [];
+                        }
+                        q.choices = q.choices.map((c) => String(c));
+                        return q;
+                    });
                     this.topics = response.data.count;
                     this.auth = response.data.auth;
                     this.set = response.data.set;
                     this.slug = response.data.title;
                     this.stats = response.data.status;
                     this.uuid = uuidv4();
+                    if (this.questions && this.questions.length > 0) {
+                        this.result.qIndex = 0;
+                        this.result.user_answer =
+                            this.questions[0].user_answer ?? null;
+                        this.result.answer_exp =
+                            this.questions[0].answer_exp ?? "";
+                    }
                 })
                 .catch((e) => {
                     console.log(e);
@@ -376,58 +509,79 @@ export default {
             this.result.question_id = id;
             this.result.user_id = this.auth;
             this.result.topic_id = this.$props.topic_id;
+            this.openOnNext = true;
             axios
                 .post(`${this.$props.topic_id}/quiz`, this.result)
                 .then((response) => {
                     let newdata = response.data.newdata;
-                    this.questions.splice(newdata[0]["index"], 1, newdata[0]);
+                    if (newdata && newdata[0]) {
+                        const nd = newdata[0];
+                        nd.user_answer =
+                            nd.user_answer != null
+                                ? String(nd.user_answer)
+                                : null;
+                        try {
+                            nd.choices =
+                                typeof nd.choices === "string"
+                                    ? JSON.parse(nd.choices)
+                                    : nd.choices;
+                        } catch (e) {
+                            nd.choices = nd.choices || [];
+                        }
+                        nd.choices = nd.choices.map((c) => String(c));
+                        this.questions.splice(nd.index, 1, nd);
+                        if (this.result.qIndex === nd.index) {
+                            this.result.user_answer = nd.user_answer ?? null;
+                            this.result.answer_exp = nd.answer_exp ?? "";
+                        }
+                    }
                     this.stats = response.data.status;
                 })
                 .catch((e) => {
                     console.log(e);
                 });
             this.result.topic_id = "";
-            this.result.answer_exp = this.result.answer_exp;
-            this.result.user_answer = this.result.user_answer;
         },
         nxtClick() {
-            var index = this.result.qIndex + 1;
-            this.count = this.count + 1;
+            let index = this.result.qIndex + 1;
             if (index < this.questions.length) {
-                this.result.user_answer = this.questions[index]["user_answer"];
-                this.result.answer_exp = this.questions[index]["answer_exp"];
-            } else {
-                this.result.user_answer = this.result.user_answer;
-                this.result.answer_exp = this.result.answer_exp;
+                this.count = index + 1;
+                this.result.qIndex = index;
+                this.result.user_answer =
+                    this.questions[index].user_answer ?? null;
+                this.result.answer_exp = this.questions[index].answer_exp ?? "";
             }
         },
         prvClick(i) {
-            this.count = this.count - 1;
-            this.result.user_answer = this.questions[i]["user_answer"];
-            if (this.questions[i]["answer_exp"] != null) {
-                this.result.answer_exp = this.questions[i]["answer_exp"];
+            if (i >= 0 && i < this.questions.length) {
+                this.count = i + 1;
+                this.result.qIndex = i;
+                this.result.user_answer = this.questions[i].user_answer ?? null;
+                this.result.answer_exp = this.questions[i].answer_exp ?? "";
             }
         },
-
         check() {
             return this.topics.length;
         },
     },
     computed: {
+        isLast() {
+            return this.count === this.questions.length;
+        },
         isDisabled() {
-            if (this.count == this.questions.length) {
-                this.fcount = this.count;
+            if (this.isLast) {
                 return true;
-            } else if (!this.result.user_answer && !this.result.answer_exp) {
-                return false;
             }
-            return true;
+            return !!(this.result.user_answer || this.result.answer_exp);
         },
         isSelected() {
             if (this.result.user_answer || this.result.answer_exp) {
                 return false;
             }
             return true;
+        },
+        isSkipDisabled() {
+            return this.isDisabled;
         },
     },
 };

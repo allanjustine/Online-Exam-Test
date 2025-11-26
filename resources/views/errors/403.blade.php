@@ -47,13 +47,13 @@
                     <h2>Assessment end instantly!</h2>
                     <p>Oops! Look's like you viloated one of the rules.</p>
                     <p>If you think this is an error, Please send as email.</p>
-                    <p>Email @: <a href="gmail.com">smctgroup2021@gmail.com</a></p>
+                    <p>Email @: <a href="mailto:smctgroup2021@gmail.com">smctgroup2021@gmail.com</a></p>
                     <a href="/" class="btn btn-primary"> Visit our Site</a>
                 </div>
 
             </div>
             <div class="col-md-6">
-                <img src="{{ asset('/images/vectors/violation.png') }}" class="img-responsive" width="80%"
+                <img src="{{ asset('images/vectors/violation.png') }}" class="img-responsive" width="80%"
                     alt="expired link">
             </div>
         </div>

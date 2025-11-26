@@ -81,6 +81,11 @@ class User extends Authenticatable
         return $this->hasOne(Color::class);
     }
 
+    public function exam()
+    {
+        return $this->hasOne(Exam::class);
+    }
+
 
     public function topic()
     {

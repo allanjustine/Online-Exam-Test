@@ -93,7 +93,7 @@
                 <div class="logo">
                     @if ($setting)
                         <a href="{{ url('/') }}" title="{{ $setting->welcome_txt }}"><img
-                                src="{{ asset('/images/logo/' . $setting->logo) }}" class="login-logo img-responsive"
+                                src="{{ asset('images/logo/' . $setting->logo) }}" class="login-logo img-responsive"
                                 alt="{{ $setting->welcome_txt }}"></a>
                     @endif
                 </div>

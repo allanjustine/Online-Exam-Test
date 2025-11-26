@@ -40,7 +40,7 @@
                                     <small class="text-danger">{{ $errors->first('logo') }}</small>
                                 </div>
                                 <div class="logo-block">
-                                    <img src="{{ asset('/images/logo/' . $setting->logo) }}" class="img-responsive"
+                                    <img src="{{ asset('images/logo/' . $setting->logo) }}" class="img-responsive"
                                         style="width: 128px !important" alt="{{ $setting->welcome_txt }}">
                                 </div>
                             </div>

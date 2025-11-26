@@ -16,7 +16,7 @@
                 <div class="logo">
                     @if ($setting)
                         <a href="{{ url('/') }}" title="{{ $setting->welcome_txt }}"><img
-                                src="{{ asset('/images/logo/' . $setting->logo) }}" class="img-responsive login-logo"
+                                src="{{ asset('images/logo/' . $setting->logo) }}" class="img-responsive login-logo"
                                 alt="{{ $setting->welcome_txt }}"></a>
                     @endif
                 </div>

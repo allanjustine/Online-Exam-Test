@@ -92,7 +92,7 @@
             @endforeach
           </ul>
           @else
-          <center><img src="{{asset('/images/vectors/zeronotif.jpeg')}}" style="width:90%"></center>
+          <center><img src="{{asset('images/vectors/zeronotif.jpeg')}}" style="width:90%"></center>
           @endif
         </div>
       </div>

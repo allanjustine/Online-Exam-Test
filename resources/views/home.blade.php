@@ -9,7 +9,7 @@
                                 <div class="navbar-header">
                                    Branding Image
                                   @if ($setting)
-    <img src="{{ asset('/images/vectors/samp.png') }}" class="login-logo img-responsive" alt="{{ $setting->welcome_txt }}">
+    <img src="{{ asset('images/vectors/samp.png') }}" class="login-logo img-responsive" alt="{{ $setting->welcome_txt }}">
     @endif
                                 </div>
                               </div>
@@ -30,7 +30,7 @@
                     <div class="row one-edge-shadow">
                         <div class="col-xs-6 ">
                             @if ($setting)
-                                <img src="{{ asset('/images/vectors/hello.svg') }}" class="img-responsive"
+                                <img src="{{ asset('images/vectors/hello.svg') }}" class="img-responsive"
                                     alt="{{ $setting->welcome_txt }}">
                             @endif
                         </div>
@@ -46,6 +46,9 @@
                                 @endphp
                                 <h2 style="color:#2F3180;"><strong> Hello {{ $fname }}!</strong></h2>
                                 <h4 style="color:#2F3180;">Please verify your email to proceed.</h4>
+                                @if(Auth::user()?->status === 'retry')
+                                    <h4 style="color:#2F3180;">You are given a chance to retry. Good luck!</h4>
+                                @endif
                                 <br />
                                 <div id="sendcode">
                                     <br>

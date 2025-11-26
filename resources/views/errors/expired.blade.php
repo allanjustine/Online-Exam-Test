@@ -42,7 +42,7 @@
 
                 </div>
                 <div class="col-md-6">
-                    <img src="{{asset('/images/vectors/time.png')}}" class="img-responsive" width="80%" alt="expired link">
+                    <img src="{{asset('images/vectors/time.png')}}" class="img-responsive" width="80%" alt="expired link">
                 </div>
             </div>
     </div>

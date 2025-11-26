@@ -14,8 +14,6 @@ use Illuminate\Support\Str;
 
 class EmailController extends Controller
 {
-
-
     public function sendmail(Request $request, $token, $name, $email, $userID)
     {
         $user = (object)['name' => $name, 'token' => $token];
@@ -29,17 +27,23 @@ class EmailController extends Controller
                     $exam = $value;
             }
         }
-        Exam::create([
+        Exam::updateOrCreate([
             'user_id' => $userID,
+        ], [
             'exam' => $exam,
             'sent_by' => $input['auth'],
         ]);
+
+        User::query()->where('id', $userID)->update([
+            'status' => 'sent',
+        ]);
+
         /* $arr= array(['user_id'=>$userID,'exam' => $exam ],'created_at' => date("Y-m-d h:i:s") );
         \DB::table('exam')->insert($arr); */
 
         Mail::to($email)->send(new ExamEmail($user));
 
-        return redirect()->back()->with('success', 'your message,here');
+        return redirect()->back()->with('success', 'Link sent successfully');
     }
     public function verifyEmail(Request $request)
     {

@@ -20,9 +20,9 @@
         <div class="login-page">
           <div class="row">
             <div class="col-md-8">
-              <center><img src="{{asset('/images/vectors/smct logo.png')}}" class="img-responsive" width="75%" alt="Strong Moto Centrum"></center>
+              <center><img src="{{asset('images/vectors/smct logo.png')}}" class="img-responsive" width="75%" alt="Strong Moto Centrum"></center>
               <br>
-              <center><img src="{{asset('/images/vectors/loginvector.svg')}}" class="img-responsive" alt="Strong Moto Centrum"/></center>
+              <center><img src="{{asset('images/vectors/loginvector.svg')}}" class="img-responsive" alt="Strong Moto Centrum"/></center>
             </div>
           <div class="col-md-4">
           <h4 style="margin-top:15%">Sign In</h4>
@@ -68,7 +68,7 @@
       </div>
         </div>
     </div>
-  </div>    
+  </div>
 @endsection
 
 @section('scripts')

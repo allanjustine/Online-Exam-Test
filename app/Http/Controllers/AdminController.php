@@ -41,7 +41,14 @@ class AdminController extends Controller
     public function apptitude($slug)
     {
         $topic = Topic::where('slug', $slug)->first();
+
         $auth = Auth::user()?->token;
+
+        $user = Auth::user();
+
+        if ($user?->status === 'violator' || $user?->exam?->violation > 5) {
+            abort(403);
+        }
 
         if (!Helper::hasResult($auth)) {
             $answers = Answer::where('topic_id', '=', $topic->topic_id)->first();
@@ -82,7 +89,14 @@ class AdminController extends Controller
 
     public function category($slug)
     {
-        $auth = Auth::user()->token;
+        $auth = Auth::user()?->token;
+
+        $user = Auth::user();
+
+        if ($user?->status === 'violator' || $user?->exam?->violation > 5) {
+            abort(403);
+        }
+
         if (!Helper::hasResult($auth)) {
             $topic = Topic::withCount('question')->where('slug', $slug)->first();
             $user_id = User::where('token', $auth)->select('id')->get();

@@ -121,7 +121,7 @@
       <h2 class="text-center">Examination Results</h2>
       <div class="row">
         <div class="col-md-3">
-          <img src="{{asset('/images/vectors/user.png')}}" class="img-responsive img-circle "><br>
+          <img src="{{asset('images/vectors/user.png')}}" class="img-responsive img-circle "><br>
           <p style="font-size: 1.2rem;color:rgb(156, 151, 151)">Examinee No : {{$user->id}}</p>
           <h4><strong>{{ucwords($user->name)}}</strong></h4>
           <p><strong>Applied</strong>:&nbsp;<span class="label label-primary">{{$user->applied_position}}</span></p>

@@ -9,7 +9,7 @@
                             <!-- Branding Image -->
                             @if ($setting)
                                 <a href="{{ url('/') }}" title="{{ $setting->welcome_txt }}"><img
-                                        src="{{ asset('/images/vectors/samp.png') }}" class="login-logo img-responsive"
+                                        src="{{ asset('images/vectors/samp.png') }}" class="login-logo img-responsive"
                                         alt="{{ $setting->welcome_txt }}"></a>
                             @endif
                         </div>
@@ -20,14 +20,14 @@
     </nav>
 @endsection
 @section('content')
-    <!--<img src="{{ asset('/images/vectors/office.png') }}" class="login-logo img-responsive" alt="{{ $setting->welcome_txt }}" style="width: 100%; height: auto;">-->
+    <!--<img src="{{ asset('images/vectors/office.png') }}" class="login-logo img-responsive" alt="{{ $setting->welcome_txt }}" style="width: 100%; height: auto;">-->
     @if (Auth::user()?->status === 'finish')
         <div id="completed" class="delete-modal modal" data-backdrop="static" data-keyboard="false" role="dialog">
             <!-- All Delete Modal -->
             <div class="modal-dialog" style="width: 380px;">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <img src="{{ asset('/images/vectors/finish.png') }}" class="img-responsive">
+                        <img src="{{ asset('images/vectors/finish.png') }}" class="img-responsive">
                     </div>
                     <div class="modal-body text-center">
                         <h4 style="color:green;"><i class="fa fa-check-circle-o fa-lg"></i><strong> Assessment

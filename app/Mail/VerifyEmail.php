@@ -26,10 +26,11 @@ class VerifyEmail extends Mailable
      */
     public function build()
     {
-        return $this->view('email.verify')
-                    ->with([
-                        'name' => $this->user['name'],
-                        'code' => $this->user['code'],
-                    ]);
+        return $this->subject('Email verfication code')
+            ->view('email.verify')
+            ->with([
+                'name' => $this->user['name'],
+                'code' => $this->user['code'],
+            ]);
     }
 }

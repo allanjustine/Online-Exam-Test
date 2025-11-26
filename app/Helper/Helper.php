@@ -10,17 +10,20 @@ use App\Models\Result;
 use App\Models\Exam;
 use App\Models\TempAnswer;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Session;
 
 class Helper
 {
     public static function splitname($name)
     {
-
-        $name = trim($name);
-        $last_name = (strpos($name, ' ') === false) ? '' : preg_replace('#.*\s([\w-]*)$#', '$1', $name);
-        $first_name = trim(preg_replace('#' . preg_quote($last_name, '#') . '#', '', $name));
-        return array($first_name, $last_name);
+        $name = Str::trim($name);
+        $first_name = Str::beforeLast($name, ' ');
+        $last_name = Str::afterLast($name, ' ');
+        return [
+            $first_name,
+            $last_name
+        ];
     }
     public static function maxChoices($array)
     {

@@ -34,6 +34,7 @@ Route::group(['middleware' => ['isadmin', 'prevent-back-history']], function () 
     Route::resource('/admin/answers', AnswersController::class);
     Route::resource('/admin/settings', SettingController::class);
     Route::post('/admin/users/destroy', [DestroyAllController::class, 'AllUsersDestroy']);
+    Route::post('/admin/users/retry/{user}', [DestroyAllController::class, 'retryUserExam'])->name('retry.exam');
     Route::post('/admin/answers/destroy', [DestroyAllController::class, 'AllAnswersDestroy']);
     Route::get('/exam/exportpdf', [AdminController::class, 'exportPDF'])->name('situation.pdf');
     Route::get('/exam/exportResultpdf', [AdminController::class, 'exportResultPDF'])->name('examresult.pdf');
@@ -60,7 +61,7 @@ Route::group(['middleware' => 'checkResult'], function () {
 });
 
 Route::view('/404/page-not-found', 'errors.404')->name('404');
-Route::view('/violate-rules', 'errors.violation')->name('violation');
+Route::view('/violate-rules', 'errors.403')->name('violation');
 Route::view('/profilling', 'profile')->name('profilling');
 
 
@@ -81,3 +82,5 @@ Route::get('/logout', function () {
     Auth::logout();
     return redirect('/');
 })->middleware('auth')->name('logout');
+
+Route::post('/violation/count', [PublicController::class, 'violationCount'])->name('violation.count');

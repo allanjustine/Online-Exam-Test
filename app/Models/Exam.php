@@ -14,7 +14,8 @@ class Exam extends Model
         'updated_at',
         'started_at',
         'end_at',
-        'sent_by'
+        'sent_by',
+        'violation',
     ];
 
     public function user()

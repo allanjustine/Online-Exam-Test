@@ -95,7 +95,7 @@
                     <!-- logo for regular state and mobile devices -->
                     <span class="logo-lg">
                         @if ($setting)
-                            <img src="{{ asset('/images/logo/' . $setting->logo) }}" class="ad-logo img-responsive"
+                            <img src="{{ asset('images/logo/' . $setting->logo) }}" class="ad-logo img-responsive"
                                 alt="SMCT Logo">
                         @endif
                     </span>
@@ -123,7 +123,7 @@
                                         <span class="badge custom-badge">{{ count($notify) }}</span>
                                     @endif
                                 </div>
-                                <ul class="dropdown-menu notif">
+                                <ul class="dropdown-menu notif" style="max-height: 500px; overflow-y: auto;">
                                     @if (count($notify) > 0)
                                         @foreach ($notify as $key)
                                             <li>
@@ -225,7 +225,7 @@
                     <ul class="sidebar-menu" data-widget="tree">
                         <!-- Optionally, you can add icons to the links -->
                         <li id='dash' class="{{ $dash }}">
-                            <a href="javascript:ajaxCall('{{ url('/admin') }}', 'dash')" title="Dashboard">
+                            <a href="/admin" title="Dashboard">
                                 <i class="fa fa-home"></i> <span>DASHBOARD</span>
                             </a>
                         </li>
@@ -239,14 +239,12 @@
                             </a>
                             <ul class="treeview-menu">
                                 <li id='examinees' class="{{ $examinees }}">
-                                    <a href="javascript:ajaxCall('{{ url('/admin/examinees') }}', 'examinees')"
-                                        title="Examinees">
+                                    <a href="/admin/examinees" title="Examinees">
                                         <i class="fa fa-user"></i> <span>EXAMINEES</span>
                                     </a>
                                 </li>
                                 <li id='adminlist'>
-                                    <a href="javascript:ajaxCall('{{ route('admin.list') }}', 'adminlist')"
-                                        title="Administrators">
+                                    <a href="{{ route('admin.list') }}" title="Administrators">
                                         <i class="fa fa-shield"></i> <span>Administrators</span>
                                     </a>
                                 </li>
@@ -254,14 +252,13 @@
                         </li>
 
                         <li id='questions' class="{{ $questions }}">
-                            <a href="javascript:ajaxCall('{{ url('admin/questions') }}', 'questions')"
-                                title="Questions">
+                            <a href="/admin/questions" title="Questions">
                                 <i class="fa fa-question-circle-o"></i> <span>SUBJECTS</span>
                             </a>
                         </li>
 
                         <li id='sett' class="{{ $sett }}">
-                            <a href="javascript:ajaxCall('{{ url('/admin/settings') }}', 'sett')" title="Settings">
+                            <a href="/admin/settings" title="Settings">
                                 <i class="fa fa-gear"></i> <span>SETTINGS</span>
                             </a>
                         </li>

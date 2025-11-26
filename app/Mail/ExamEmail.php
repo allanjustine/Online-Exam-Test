@@ -17,11 +17,11 @@ class ExamEmail extends Mailable
      * @return void
      */
 
-     public $user;
+    public $user;
 
     public function __construct($user)
     {
-        $this->user=$user;
+        $this->user = $user;
     }
 
     /**
@@ -31,10 +31,11 @@ class ExamEmail extends Mailable
      */
     public function build()
     {
-        return $this->view('email.exam')
-        ->with([
-          'name' => $this->user->name,
-          'token' => $this->user->token,
-        ]);
+        return $this->subject('Your Exam Link')
+            ->view('email.exam')
+            ->with([
+                'name' => $this->user->name,
+                'token' => $this->user->token,
+            ]);
     }
 }

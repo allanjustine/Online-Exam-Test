@@ -68,4 +68,18 @@ class PublicController extends Controller
         ]);
         return response()->json(['success' => true]);
     }
+
+    public function violationCount(Request $request)
+    {
+        $user_id = $request->user_id;
+
+        $exam = Exam::query()
+            ->where('user_id', $user_id)->first();
+
+        $exam->update([
+            'violation' => $exam->violation + 1,
+        ]);
+
+        return response()->json(['success' => true, 'violation' => $exam->violation]);
+    }
 }

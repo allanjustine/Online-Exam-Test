@@ -10,7 +10,8 @@
     $users = \DB::table('result')->where('user_id', $user->id)->first();
     $que = App\Models\Question::where('topic_id', $topic->id)->first();
     $que2 = App\Models\Question::where('topic_id', $topic->id)->get();
-    $tID = App\Models\Exam::where('user_id', $user->id)->select('exam')->get();
+    $tID = App\Models\Exam::where('user_id', $user->id)->select('exam', 'violation')->get();
+    $exam = App\Models\Exam::where('user_id', $user->id)->select('exam', 'violation')->get();
     $tID = explode(',', $tID[0]['exam']);
     $topics = App\Models\Topic::all();
     $topic_ids = [];
@@ -87,15 +88,16 @@
 
                     // NEXT BUTTON
                     $(document).on('click', '.nextbtn', function() {
-                        let queIndex = $(".myQuestion.active input:hidden[name=queIndex]").val();
+                        let queIndex = parseInt($(".myQuestion.active input:hidden[name=queIndex]")
+                            .val(), 10);
                         let active = $(".myQuestion.active");
 
-                        if (queIndex > questions) {
-                            console.log('end');
+                        if (queIndex >= questions) {
+                            console.log('Last question clicked - not advancing DOM');
+                            return;
                         } else {
                             active.removeClass("active");
                             active.next().addClass("active");
-                            $(".myForm")[0].reset();
                         }
 
                         setTimeout(function() {
@@ -107,25 +109,23 @@
                         }, 100);
                     });
 
-                    // PREVIOUS BUTTON
-                    $(".prebtn").click(function() {
-                        var i = $(this).val() - 1;
+                    // PREVIOUS
+                    $(document).on('click', '.prebtn', function() {
+                        let val = parseInt($(this).val(), 10);
+                        if (!Number.isInteger(val)) return;
+                        var i = val - 1;
+                        if (i < 0 || i >= questions) return;
                         var indx = '#que' + i;
                         var active = $(".myQuestion.active");
 
                         active.removeClass("active");
-
-                        if (i == questions - 1) {
-                            $(indx).next().addClass("active");
-                        } else {
-                            $(indx).prev().addClass("active");
-                        }
-
-                        $(".myForm")[0].reset();
+                        $(indx).addClass("active");
 
                         setTimeout(function() {
                             if (window.App && App.$refs && App.$refs.foo) {
                                 App.$refs.foo.prvClick(i);
+                            } else {
+                                console.error("App.$refs.foo is not available yet.");
                             }
                         }, 100);
                     });
@@ -134,7 +134,6 @@
                     $(document).on('click', '.submitBtn', function() {
                         check();
                     });
-
                 }, 1000);
 
                 // Disable Browser Back Button
@@ -143,17 +142,17 @@
                     history.pushState(null, null, document.URL);
                 });
 
-
                 // ============================
                 // CHECK FUNCTION
                 // ============================
+
                 function check() {
                     console.log(topics[topics.length - 1]);
-
                     setTimeout(function() {
 
                         // Has next topic?
                         if (topic_id != topics[topics.length - 1]) {
+
                             for (let i = 0; i < topics.length; i++) {
                                 if (topics[i] > topic_id) {
                                     var url = @json(route('category_title', ['slug' => 'slug']));
@@ -162,12 +161,7 @@
                                     break;
                                 }
                             }
-                        }
-
-                        // FINAL TOPIC → calculate
-                        else {
-                            Cookies.remove("time");
-
+                        } else {
                             $.ajax({
                                 type: 'GET',
                                 beforeSend: function() {
@@ -177,6 +171,7 @@
                                 success: function(data) {
                                     $('.ajax-loader').css("visibility", "hidden");
                                     location.href = @json(route('exam.completed'));
+                                    Cookies.remove("time");
                                 }
                             });
                         }
@@ -248,37 +243,44 @@
             });
         </script>
 
-
-        {{-- <script>
+        <script>
             var count = 0;
             $(document).ready(function() {
                 var body = document.querySelector('body');
 
                 function checkPageFocus() {
-                    count++;
-                    if (count <= 5) {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Violation Warning!',
-                            text: `Warning: Please avoid opening new tab or new browser! Violation: ${count}/5`,
-                        })
-                    } else {
-                        $.ajax({
-                            type: 'GET',
-                            beforeSend: function() {
-                                $('.ajax-loader').css("visibility", "visible");
-                            },
-                            url: '/violation',
-                            success: function(data) {
-                                $('.ajax-loader').css("visibility", "hidden");
-                                location.href = @json(route('violation'));
-                            }
-                        });
-                    }
+
+                    axios.post(@json(route('violation.count')), {
+                        user_id: @json($user->id)
+                    }).then(function(response) {
+
+                        count = response.data.violation;
+
+                        if (count <= 5) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Violation Warning!',
+                                text: `Warning: Please avoid opening new tab or new browser! Violation: ${count}/5`,
+                            });
+                        } else {
+                            $.ajax({
+                                type: 'GET',
+                                beforeSend: function() {
+                                    $('.ajax-loader').css("visibility", "visible");
+                                },
+                                url: '/violation',
+                                success: function(data) {
+                                    $('.ajax-loader').css("visibility", "hidden");
+                                    Cookies.remove("time");
+                                    location.reload();
+                                }
+                            });
+                        }
+                    });
                 }
                 body.onblur = checkPageFocus;
             });
-        </script> --}}
+        </script>
     @else
         {{ '' }}
     @endif
