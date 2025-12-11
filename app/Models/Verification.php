@@ -9,6 +9,6 @@ class Verification extends Model
     public $timestamps = true;
 
     protected $fillable = [
-        'user_token','code',
+        'user_token', 'code',
     ];
 }

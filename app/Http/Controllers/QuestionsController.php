@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Helper\Helper;
-use Illuminate\Http\Request;
-use App\Models\Topic;
 use App\Models\Question;
+use App\Models\Topic;
 use App\Models\User;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
@@ -30,6 +30,7 @@ class QuestionsController extends Controller
         if ($request->ajax()) {
             return view('admin.questions.index', compact('questions', 'topics', 'notify'))->renderSections()['content'];
         }
+
         return view('admin.questions.index', compact('questions', 'topics', 'notify'));
     }
 
@@ -46,31 +47,30 @@ class QuestionsController extends Controller
     /**
      * Import a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function importExcelToDB(Request $request)
     {
         $request->validate([
-            'question_file' => 'required|mimes:xlsx,xls'
+            'question_file' => 'required|mimes:xlsx,xls',
         ]);
         if ($request->hasFile('question_file')) {
             $file = $request->file('question_file');
             $filename = $file->getClientOriginalName();
             $file->move('questionfiles', $filename);
-            $path = public_path() . '/assessment/questionfiles/' . $filename; //for online
-            //$path=public_path().'/questionfiles/'.$filename;//for offline
+            $path = public_path().'/assessment/questionfiles/'.$filename; // for online
+            // $path=public_path().'/questionfiles/'.$filename;//for offline
             $data = Excel::load($path)->get();
             $countSheet = Helper::countSheet($data);
             $set = 1;
             foreach ($data as $sheet) {
-                $arr = array();
+                $arr = [];
                 foreach ($sheet as $value) {
-                    $choices = array();
+                    $choices = [];
                     $alpha = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o'];
                     $c = count($alpha);
                     for ($i = 0; $i < $c; $i++) {
-                        if (!empty($value[$alpha[$i]])) {
+                        if (! empty($value[$alpha[$i]])) {
                             $choices[$i] = $value[$alpha[$i]];
                         } else {
                             break;
@@ -82,18 +82,19 @@ class QuestionsController extends Controller
                     DB::table('questions')->insert($arr);
                     $set++;
                 } catch (Exception $e) {
-                    return back()->with('deleted', 'We encounter error in processing your request.Error:' . $e);
+                    return back()->with('deleted', 'We encounter error in processing your request.Error:'.$e);
                 }
             }
+
             return back()->with('added', 'Questions Successfully Imported');
         }
+
         return back()->with('deleted', 'Request data does not have any files to import');
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -102,7 +103,7 @@ class QuestionsController extends Controller
             'topic_id' => 'required',
             'question' => 'required',
             'type' => 'required',
-            'question_img' => 'image'
+            'question_img' => 'image',
         ]);
 
         $input = $request->all();
@@ -110,12 +111,13 @@ class QuestionsController extends Controller
 
         if ($file = $request->file('question_img')) {
 
-            $name = time() . '-' . $file->getClientOriginalName();
+            $name = time().'-'.$file->getClientOriginalName();
             $file->storeAs('question_img', $name, 'public');
             $input['question_img'] = $name;
         }
 
         Question::create($input);
+
         return back()->with('added', 'Question has been added');
     }
 
@@ -133,6 +135,7 @@ class QuestionsController extends Controller
             ->whereHas('result')
             ->where('notify', 1)
             ->get();
+
         return view('admin.questions.show', compact('topic', 'questions', 'notify'));
     }
 
@@ -150,7 +153,6 @@ class QuestionsController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
@@ -161,7 +163,7 @@ class QuestionsController extends Controller
             'topic_id' => 'required',
             'question' => 'required',
             'type' => 'required',
-            'question_img' => 'image'
+            'question_img' => 'image',
         ]);
 
         $input = $request->all();
@@ -178,7 +180,7 @@ class QuestionsController extends Controller
         }
         if ($file = $request->file('question_img')) {
 
-            $name = time() . '-' . $file->getClientOriginalName();
+            $name = time().'-'.$file->getClientOriginalName();
 
             if ($question->question_img != null) {
                 Storage::disk('public')->delete("question_img/{$question->question_img}");
@@ -210,21 +212,24 @@ class QuestionsController extends Controller
         $question = Question::findOrFail($id);
 
         if ($question->question_img != null) {
-            unlink(public_path() . '/assessment/storage/question_img/' . $question->question_img);
+            unlink(public_path().'/assessment/storage/question_img/'.$question->question_img);
         }
 
         $question->delete();
+
         return back()->with('deleted', 'Question has been deleted');
     }
+
     public function destroyTopic($id)
     {
         $question = Question::findOrFail($id);
 
         if ($question->question_img != null) {
-            unlink(public_path() . '/storage/question_img/' . $question->question_img);
+            unlink(public_path().'/storage/question_img/'.$question->question_img);
         }
 
         $question->delete();
+
         return back()->with('deleted', 'Question has been deleted');
     }
 }

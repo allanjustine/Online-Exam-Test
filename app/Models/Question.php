@@ -13,7 +13,7 @@ class Question extends Model
         'answer',
         'question_img',
         'type',
-        'underline'
+        'underline',
     ];
 
     public function answers()

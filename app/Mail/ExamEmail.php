@@ -5,7 +5,6 @@ namespace App\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Contracts\Queue\ShouldQueue;
 
 class ExamEmail extends Mailable
 {
@@ -16,7 +15,6 @@ class ExamEmail extends Mailable
      *
      * @return void
      */
-
     public $user;
 
     public function __construct($user)

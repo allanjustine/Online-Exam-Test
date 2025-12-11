@@ -2,14 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use App\Models\User;
-use App\Models\Exam;
-use App\Models\Result;
-use App\Models\Essay;
 use App\Models\Color;
+use App\Models\User;
 use Hash;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class UsersController extends Controller
@@ -34,7 +30,6 @@ class UsersController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -42,7 +37,7 @@ class UsersController extends Controller
         $token = bin2hex(random_bytes(20));
         $input = $request->all();
         if ($input['role'] == 'S') {
-            $color = '#' . dechex(rand(256, 16777215));
+            $color = '#'.dechex(rand(256, 16777215));
             $request->validate([
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users',
@@ -62,6 +57,7 @@ class UsersController extends Controller
                 'user_id' => $admin_id[0]->id,
                 'profile_color' => $color,
             ]);
+
             return back()->with('added', 'Administrator has been added');
         } else {
             $request->validate([
@@ -80,6 +76,7 @@ class UsersController extends Controller
                 'added_by' => $input['auth'],
                 'password' => 'password',
             ]);
+
             return back()->with('added', 'Examinee has been added');
         }
     }
@@ -109,7 +106,6 @@ class UsersController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
@@ -121,10 +117,9 @@ class UsersController extends Controller
             $request->validate([
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email',
-                //'password' => 'required|string|min:6',
-                //'mobile' => 'unique:users',
+                // 'password' => 'required|string|min:6',
+                // 'mobile' => 'unique:users',
             ]);
-
 
             // if(isset($request->changepass))
             //    {
@@ -140,8 +135,9 @@ class UsersController extends Controller
                     'name' => $request->name,
                     'email' => $request->email,
                 ]);
+
                 return response()->json(['success' => 'Form is successfully submitted!']);
-            } else if ($user->role == 'E') {
+            } elseif ($user->role == 'E') {
                 User::where('id', $request->id)->update([
                     'name' => $request->name,
                     'email' => $request->email,
@@ -170,6 +166,7 @@ class UsersController extends Controller
         DB::table('exam')->where('user_id', $id)->delete();
         $user = User::findOrFail($id);
         $user->delete();
+
         return back()->with('deleted', 'User has been deleted');
     }
 }

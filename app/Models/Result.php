@@ -15,7 +15,7 @@ class Result extends Model
         'user_id',
         'score',
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     public function user()

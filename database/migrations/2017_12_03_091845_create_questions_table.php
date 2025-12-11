@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateQuestionsTable extends Migration
 {
@@ -23,7 +23,7 @@ class CreateQuestionsTable extends Migration
             $table->string('d');
             $table->string('answer')->nullable();
             $table->text('code_snippet')->nullable();
-            $table->text('answer_exp')->nullable();         
+            $table->text('answer_exp')->nullable();
             $table->foreign('topic_id')->references('id')->on('topics')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });

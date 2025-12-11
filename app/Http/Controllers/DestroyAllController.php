@@ -3,9 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Mail\ExamEmail;
-use Illuminate\Http\Request;
-use App\Models\User;
 use App\Models\Answer;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 
@@ -14,6 +13,7 @@ class DestroyAllController extends Controller
     public function AllUsersDestroy()
     {
         User::where('role', '!=', 'A')->getQuery()->delete();
+
         // User::where('role', '!=', 'A')->truncate();
         return back()->with('deleted', 'All Student Has Been Deleted');
     }
@@ -21,6 +21,7 @@ class DestroyAllController extends Controller
     public function AllAnswersDestroy()
     {
         Answer::truncate();
+
         return back()->with('deleted', 'All Answer Sheets Has Been Deleted');
     }
 

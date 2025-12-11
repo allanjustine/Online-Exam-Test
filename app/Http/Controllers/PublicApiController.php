@@ -2,30 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-//use App\Rules\MatchOldPassword;
-use Illuminate\Support\Facades\Hash;
-use App\Events\ExamSubmitted;
-use App\Models\Result;
+use App\Models\Color;
+// use App\Rules\MatchOldPassword;
 use App\Models\User;
 use App\Models\Verification;
-use App\Models\Color;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
 
 class PublicApiController extends Controller
 {
-
     public function getUserDetails(Request $request)
     {
         $id = $request->id;
         $data = User::where('id', '=', $id)->get();
         $color = Color::where('user_id', $id)->select('profile_color')->get();
-        $data = $data[0] ?? "";
-        $color = $color[0] ?? "";
+        $data = $data[0] ?? '';
+        $color = $color[0] ?? '';
         $fl = substr($data->name, 0, 1);
         $array = compact('data', 'color', 'fl');
+
         return response()->json($array);
     }
 
@@ -41,6 +37,7 @@ class PublicApiController extends Controller
         ]);
         if (Hash::check($request->current_password, $current->password)) {
             User::find($request->user_id)->update(['password' => Hash::make($request->password)]);
+
             return response()->json(['success' => true]);
         } else {
             return response()->json(['success' => false]);
@@ -52,6 +49,7 @@ class PublicApiController extends Controller
         $user = User::where('id', '=', $request->data0)->get();
         $result = DB::table('result')->where('user_id', $request->data0)->select('score')->get();
         $array = compact('result', 'user');
+
         return response()->json($array);
     }
 
@@ -64,8 +62,10 @@ class PublicApiController extends Controller
         if ($code[0]->code === $request->code) {
 
             User::where('id', $request->input('id'))->update(['token' => $token]);
+
             return response()->json(['success' => true]);
         }
+
         return response()->json(['success' => false]);
     }
 }

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Answer;
+use Illuminate\Http\Request;
 
 class AnswersController extends Controller
 {
@@ -15,6 +15,7 @@ class AnswersController extends Controller
     public function index()
     {
         $answers = Answer::all();
+
         return view('admin.answers', compact('answers'));
     }
 
@@ -31,7 +32,6 @@ class AnswersController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -64,7 +64,6 @@ class AnswersController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
@@ -83,6 +82,7 @@ class AnswersController extends Controller
     {
         $answer = Answer::findOrFail($id);
         $answer->delete();
+
         return back()->with('deleted', "Student's answer has been deleted");
     }
 }

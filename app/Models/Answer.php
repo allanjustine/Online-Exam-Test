@@ -11,7 +11,7 @@ class Answer extends Model
         'user_id',
         'question_id',
         'user_answer',
-        'answer_exp'
+        'answer_exp',
     ];
 
     public function user()

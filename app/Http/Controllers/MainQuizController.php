@@ -2,18 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Helper\Helper;
+use App\Models\Answer;
+use App\Models\Exam;
+use App\Models\Question;
+use App\Models\TempAnswer;
+use App\Models\Topic;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Helper\Helper;
-use App\Models\Question;
-use App\Models\Topic;
-use App\Models\Answer;
-use App\Models\TempAnswer;
-use App\Models\User;
-use App\Models\Exam;
 use Illuminate\Support\Facades\DB;
-use Session;
-
 
 class MainQuizController extends Controller
 {
@@ -52,7 +50,8 @@ class MainQuizController extends Controller
             $smatch = ['topic_id' => $input['topic_id'], 'user_id' => $user->id];
             $status = TempAnswer::where($smatch)->select('index', 'status')->orderBy('index', 'ASC')->get();
             $status = $status->flatten();
-            return response()->json(["newdata" => $newdata, 'status' => $status, "message" => "No Answer Selected"]);
+
+            return response()->json(['newdata' => $newdata, 'status' => $status, 'message' => 'No Answer Selected']);
         }
         if ($input['user_answer'] != null || $input['answer_exp'] != null) {
             if ($x != null) {
@@ -70,7 +69,7 @@ class MainQuizController extends Controller
             $status = TempAnswer::where($smatch)->select('index', 'status')->orderBy('index', 'ASC')->get();
             $status = $status->flatten();
 
-            return response()->json(["answers" => $answers, "newdata" => $newdata, 'status' => $status, "message" => "Data Updated Successfuly"]);
+            return response()->json(['answers' => $answers, 'newdata' => $newdata, 'status' => $status, 'message' => 'Data Updated Successfuly']);
         }
     }
 
@@ -78,7 +77,7 @@ class MainQuizController extends Controller
     {
         $auth = Auth::user()?->token;
 
-        if (!Helper::hasResult($auth)) {
+        if (! Helper::hasResult($auth)) {
             $topic = Topic::findOrFail($id);
             $slug = Topic::where('id', $id)->select('slug')->get();
             $slug = $slug[0];
@@ -86,21 +85,21 @@ class MainQuizController extends Controller
             $user = $user[0];
             $questions = collect();
             $count = Exam::where('user_id', '=', $user->id)->select('exam')->get();
-            $count = explode(",", $count[0]['exam']);
+            $count = explode(',', $count[0]['exam']);
             $questions = Question::with('topic')->where('topic_id', $topic->id)->select('topic_id', 'id', 'question', 'choices', 'question_img', 'underline', 'type', 'code_snippet')->get();
             foreach ($questions as $key => $value) {
                 $quesTitle = $value->question;
 
-                if (!empty($value->underline)) {
+                if (! empty($value->underline)) {
                     if (strpos($value->underline, ',')) {
                         $words = explode(',', $value->underline);
                         foreach ($words as $word) {
 
-                            $quesTitle = str_replace($word, "<span class='underline'>" . $word . "</span>", $quesTitle);
+                            $quesTitle = str_replace($word, "<span class='underline'>".$word.'</span>', $quesTitle);
                         }
                     } else {
                         if (strpos($quesTitle, $value->underline)) {
-                            $quesTitle = str_replace($value->underline, "<span class='underline'>" . $value->underline . "</span>", $quesTitle);
+                            $quesTitle = str_replace($value->underline, "<span class='underline'>".$value->underline.'</span>', $quesTitle);
                         }
                     }
                 }
@@ -127,11 +126,12 @@ class MainQuizController extends Controller
             $finalCollect = $finalCollect->flatten();
             $status = TempAnswer::where($match)->select('index', 'status')->orderBy('index', 'ASC')->get();
             $status = $status->flatten();
-            return response()->json(["questions" => $finalCollect, "topic" => $topic->id, "set" => $topic->set, "auth" => $auth, "count" => $count, "title" => $slug->slug, "status" => $status]);
+
+            return response()->json(['questions' => $finalCollect, 'topic' => $topic->id, 'set' => $topic->set, 'auth' => $auth, 'count' => $count, 'title' => $slug->slug, 'status' => $status]);
         }
+
         return view('errors.expired');
     }
-
 
     /**
      * Show the form for editing the specified resource.
@@ -147,7 +147,6 @@ class MainQuizController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
@@ -166,6 +165,7 @@ class MainQuizController extends Controller
     {
         $answer = Answer::findOrFail($id);
         $answer->delete();
+
         return back()->with('deleted', 'Record has been deleted');
     }
 }

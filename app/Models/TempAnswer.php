@@ -24,10 +24,12 @@ class TempAnswer extends Model
     {
         return $this->belongsTo(Topic::class);
     }
+
     public function question()
     {
         return $this->belongsTo(Question::class);
     }
+
     public function user()
     {
         return $this->belongsTo(User::class);

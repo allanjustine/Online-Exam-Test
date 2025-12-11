@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\File;
-use App\Models\Topic;
-use App\Models\Answer;
 use App\Models\Question;
+use App\Models\Topic;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 class TopicController extends Controller
 {
@@ -31,13 +30,10 @@ class TopicController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-
-
 
         $request->validate([
             'title' => 'required|string|unique:topics,title',
@@ -48,6 +44,7 @@ class TopicController extends Controller
         $input['slug'] = Str::slug($request->title, '-');
         $quiz = Topic::create($input);
         $quiz->save();
+
         return back()->with('added', 'Topic has been added');
     }
 
@@ -76,7 +73,6 @@ class TopicController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
@@ -88,14 +84,13 @@ class TopicController extends Controller
             'description' => 'required',
             'timer' => 'required',
 
-
         ]);
 
         $topic = Topic::findOrFail($id);
         $topic->title = $request->title;
         $topic->slug = Str::slug($request->title, '-');
         $topic->description = $request->description;
-        //$topic->per_q_mark = $request->per_q_mark;
+        // $topic->per_q_mark = $request->per_q_mark;
         $topic->timer = $request->timer;
 
         $topic->save();
@@ -110,6 +105,7 @@ class TopicController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function destroy($id) {}
+
     public function deleteTopic($id)
     {
         $findquestions = Question::where('topic_id', '=', $id);
@@ -120,9 +116,9 @@ class TopicController extends Controller
 
                 if ($question->question_img != null) {
                     // $path = public_path().'/assessment/storage/question_img/'.$question->question_img;
-                    $path = public_path() . '/storage/question_img/' . $question->question_img;
+                    $path = public_path().'/storage/question_img/'.$question->question_img;
                     unlink($path);
-                    //File::delete($path);
+                    // File::delete($path);
                 }
                 $question->delete();
             }
@@ -130,6 +126,7 @@ class TopicController extends Controller
 
         return back()->with('deleted', 'Topic has been deleted');
     }
+
     public function deleteperquizsheet($id)
     {
         $findquestions = Question::where('topic_id', '=', $id)->get();
@@ -139,9 +136,9 @@ class TopicController extends Controller
 
                 if ($question->question_img != null) {
                     // $path = public_path().'/assessment/storage/question_img/'.$question->question_img;
-                    $path = public_path() . '/storage/question_img/' . $question->question_img;
+                    $path = public_path().'/storage/question_img/'.$question->question_img;
                     unlink($path);
-                    //File::delete($path);
+                    // File::delete($path);
                 }
                 $question->delete();
             }

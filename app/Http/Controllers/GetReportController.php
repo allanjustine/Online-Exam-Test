@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use App\Models\User;
-use App\Models\Topic;
 use App\Models\Answer;
 use App\Models\Question;
+use App\Models\Topic;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class GetReportController extends Controller
 {
@@ -18,6 +17,7 @@ class GetReportController extends Controller
         $answers = Answer::all();
         $topics = Topic::all();
         $c_questions = Question::count();
+
         return view('admin.all_reports', compact('students', 'answers', 'c_questions', 'topics'));
     }
 
@@ -28,6 +28,7 @@ class GetReportController extends Controller
         $answers = Answer::all();
         $topics = Topic::all();
         $c_questions = Question::count();
+
         return view('admin.top_report', compact('students', 'answers', 'c_questions', 'topics'));
     }
 

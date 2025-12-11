@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Setting;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 class SettingController extends Controller
 {
@@ -35,6 +34,7 @@ class SettingController extends Controller
         if ($request->ajax()) {
             return view('admin.settings', compact('settings', 'notify', 'env_files'))->renderSections()['content'];
         }
+
         return view('admin.settings', compact('settings', 'notify', 'env_files'));
     }
 
@@ -51,7 +51,6 @@ class SettingController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -84,14 +83,12 @@ class SettingController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
         $setting = Setting::findOrFail($id);
-
 
         $request->validate([
             'logo' => 'image|mimes:jpeg,png,jpg',
@@ -102,8 +99,8 @@ class SettingController extends Controller
 
         if ($file = $request->file('logo')) {
 
-            $name = 'logo_' . time() . $file->getClientOriginalName();
-            unlink(public_path() . '/assessment/images/logo/' . $setting->logo);
+            $name = 'logo_'.time().$file->getClientOriginalName();
+            unlink(public_path().'/assessment/images/logo/'.$setting->logo);
             $file->move('images/logo/', $name);
             $input['logo'] = $name;
         }
@@ -111,7 +108,7 @@ class SettingController extends Controller
         if ($file2 = $request->file('favicon')) {
 
             $name2 = $file2->getClientOriginalName();
-            unlink(public_path() . '/assessment/images/logo/' . $setting->favicon);
+            unlink(public_path().'/assessment/images/logo/'.$setting->favicon);
             $file2->move('images/logo/', $name2);
             $input['favicon'] = $name2;
         }
@@ -131,6 +128,7 @@ class SettingController extends Controller
         }
 
         $setting->update($input);
+
         return back()->with('updated', 'Settings have been saved !');
     }
 

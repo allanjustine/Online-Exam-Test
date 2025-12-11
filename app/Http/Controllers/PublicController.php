@@ -2,32 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Events\ExamSubmitted;
-use Notification;
-use App\Notifications\StatusNotification;
-use Hash;
-use App\Models\User;
-use App\Answer;
 use App\Helper\Helper;
-use App\Topic;
-use App\TempAnswer;
-use App\Question;
 use App\Models\Exam;
+use App\Models\User;
+use App\Notifications\StatusNotification;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
+use Notification;
 
 class PublicController extends Controller
 {
     public function index()
     {
-        if (Auth::user()?->status !== "finish") {
+        if (Auth::user()?->status !== 'finish') {
             return view('errors.expired');
         }
+
         return view('finish');
     }
+
     public function clear()
     {
         $exitCode = Artisan::call('cache:clear');
@@ -35,17 +30,20 @@ class PublicController extends Controller
         $exitCode = Artisan::call('route:clear');
         $exitCode = Artisan::call('view:clear');
         $exitCode = Artisan::call('config:cache');
+
         return '<h1>Cleared</h1>';
     }
+
     public function expired()
     {
         return view('errors.expired');
     }
+
     public function notify()
     {
 
         $token = Auth::user()?->token;
-        if (!Helper::hasResult($token)) {
+        if (! Helper::hasResult($token)) {
             User::where('token', $token)->update(['notify' => 1]);
             Helper::calculateResult($token);
             $notify = User::with('result')
@@ -53,12 +51,15 @@ class PublicController extends Controller
                 ->where('notify', 1)
                 ->get();
             $admins = User::where('role', 'A')->get();
-            //event(new ExamSubmitted($notify));
-            //Notification::send($admins, new StatusNotification($notify));
+
+            // event(new ExamSubmitted($notify));
+            // Notification::send($admins, new StatusNotification($notify));
             return response()->json(['success' => true]);
         }
+
         return view('errors.expired');
     }
+
     public function violation()
     {
         $token = Auth::user()?->token;
@@ -68,6 +69,7 @@ class PublicController extends Controller
         User::where('id', $user->id)->update([
             'token' => bin2hex(random_bytes(20)),
         ]);
+
         return response()->json(['success' => true]);
     }
 

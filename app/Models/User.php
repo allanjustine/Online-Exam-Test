@@ -6,7 +6,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Auth;
 
 class User extends Authenticatable
 {
@@ -29,7 +28,7 @@ class User extends Authenticatable
         'applied_position',
         'notify',
         'status',
-        'added_by'
+        'added_by',
     ];
 
     /**
@@ -86,7 +85,6 @@ class User extends Authenticatable
         return $this->hasOne(Exam::class);
     }
 
-
     public function topic()
     {
         return $this->belongsToMany(Topic::class, 'topic_user')
@@ -96,6 +94,6 @@ class User extends Authenticatable
 
     public function is_admin()
     {
-        return $this->role === "S" || $this->role === "A";
+        return $this->role === 'S' || $this->role === 'A';
     }
 }

@@ -7,7 +7,6 @@ use App\Http\Controllers\CopyrighttextController;
 use App\Http\Controllers\DestroyAllController;
 use App\Http\Controllers\EmailController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MainQuizController;
 use App\Http\Controllers\PublicController;
 use App\Http\Controllers\QuestionsController;
@@ -25,7 +24,7 @@ Route::group(['middleware' => ['isadmin', 'prevent-back-history']], function () 
     Route::delete('delete/topic/{id}', [TopicController::class, 'deleteTopic'])->name('del.topic');
     Route::get('/admin', [AdminController::class, 'index'])->name('dashboard');
     Route::get('examinee/exam/results/{id?}', [AdminController::class, 'getResult'])->name('exam.result');
-    //Route::delete('reset/response/{topicid}/{userid}','AllReportController@delete');
+    // Route::delete('reset/response/{topicid}/{userid}','AllReportController@delete');
     Route::get('/admin/examinees', [AdminController::class, 'applicants'])->name('examinees.lists');
     Route::get('/admin/admin_list', [AdminController::class, 'adminlist'])->name('admin.list');
     Route::resource('/admin/topics', TopicController::class);
@@ -55,7 +54,7 @@ Route::get('/admin/export', [AdminController::class, 'exportTemplate'])->name('e
 Route::middleware(['checkResult', 'auth'])->group(function () {
     Route::get('online-assessment/welcome/instructions', [AdminController::class, 'startquiz'])->name('start_quiz');
     Route::get('online-assessment/category/{slug?}', [AdminController::class, 'apptitude'])->name('aptitude_exam');
-    Route::get('online-assessment/category/{slug}/direction',  [AdminController::class, 'category'])->name('category_title');
+    Route::get('online-assessment/category/{slug}/direction', [AdminController::class, 'category'])->name('category_title');
     Route::get('/calculate', [PublicController::class, 'notify']);
     Route::get('/violation', [PublicController::class, 'violation']);
     Route::resource('online-assessment/category/{id}/quiz', MainQuizController::class);
@@ -68,11 +67,10 @@ Route::view('/404/page-not-found', 'errors.404')->name('404');
 Route::view('/violate-rules', 'errors.403')->name('violation');
 Route::view('/profilling', 'profile')->name('profilling');
 
-
 Route::get('admin/moresettings/copyright', [CopyrighttextController::class, 'index'])->name('copyright.index');
 Route::put('admin/moresettings/copyright/{id}', [CopyrighttextController::class, 'update'])->name('copyright.update');
 
-//env.
+// env.
 Route::get('/admin/mail-settings', [Configcontroller::class, 'getset'])->name('mail.getset');
 Route::post('admin/mail-settings', [Configcontroller::class, 'changeMailEnvKeys'])->name('mail.update');
 
@@ -84,6 +82,7 @@ Route::redirect('/start-exam', 'online-assessment/welcome/instructions');
 
 Route::get('/logout', function () {
     Auth::logout();
+
     return redirect('/');
 })->middleware('auth')->name('logout');
 

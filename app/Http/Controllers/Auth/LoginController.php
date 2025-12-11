@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use Laravel\Socialite\Facades\Socialite;
 use App\Models\User;
 use Auth;
 use Hash;
+use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Laravel\Socialite\Facades\Socialite;
 
 class LoginController extends Controller
 {
@@ -55,20 +55,20 @@ class LoginController extends Controller
     {
         $userSocial = Socialite::driver($service)->user();
 
-        //return $userSocial->name;
+        // return $userSocial->name;
         $findUser = User::where('email', $userSocial->email)->first();
         if ($findUser) {
             Auth::login($findUser);
+
             return '<script>if (window.opener) {window.opener.location.href="/quickquiz/public"; window.close();}</script>';
         } else {
             $user = new User;
             $user->name = 'Administrator';
             $user->email = 'hr_admin@onlineexam.com';
             $user->password = Hash::make(camilletj1992);
-            $user->role = "S";
+            $user->role = 'S';
             $user->save();
             $this->guard()->login($user);
-
 
             return '<script>if (window.opener) {window.opener.location.href="/quickquiz/public"; window.close();}</script>';
         }

@@ -2,24 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use App\Events\ExamSubmitted;
-use App\Models\User;
-use App\Models\Exam;
-use App\Models\Topic;
+use App\Helper\Helper;
 use App\Models\Answer;
-use App\Models\Essay;
-use App\Models\copyrighttext;
+use App\Models\Exam;
 use App\Models\Question;
 use App\Models\Result;
-use App\Models\Color;
-use App\Helper\Helper;
+use App\Models\Topic;
+use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Session;
-use View;
 
 class AdminController extends Controller
 {
@@ -37,6 +31,7 @@ class AdminController extends Controller
         if ($request->ajax()) {
             return view('admin.dashboard', compact('topics', 'notify', 'admin_count', 'examinee_count', 'completed_count', 'pending_count'))->renderSections()['content'];
         }
+
         return view('admin.dashboard', compact('topics', 'notify', 'admin_count', 'examinee_count', 'completed_count', 'pending_count'));
     }
 
@@ -52,11 +47,13 @@ class AdminController extends Controller
             abort(403);
         }
 
-        if (!Helper::hasResult($auth)) {
+        if (! Helper::hasResult($auth)) {
             $answers = Answer::where('topic_id', '=', $topic->topic_id)->first();
             User::where('token', $auth)->update(['status' => 'progress']);
+
             return view('main_quiz', compact('topic', 'answers'));
         }
+
         return view('errors.expired');
     }
 
@@ -64,28 +61,30 @@ class AdminController extends Controller
     {
         $auth = Auth::user()?->token;
 
-        if (!$auth) {
+        if (! $auth) {
             return redirect()->route('login');
         }
 
-        if (!Helper::hasResult($auth)) {
+        if (! Helper::hasResult($auth)) {
             $exam_user = User::where('token', $auth)->select('id')->get();
             $exam_user = $exam_user[0];
             $topics = DB::select('select * from topics');
-            $topic = array();
+            $topic = [];
             $exam = Exam::where('user_id', '=', $exam_user->id)->select('exam')->get();
             // dd($exam);
             $exam = $exam[0]['exam'] ?? null;
-            $exam = explode(",", $exam);
+            $exam = explode(',', $exam);
             for ($i = 0; $i < count($exam); $i++) {
                 foreach ($topics as $sub) {
-                    if ($sub->id == $exam[$i])
+                    if ($sub->id == $exam[$i]) {
                         $topic[$i] = ['title' => $sub->title, 'slug' => $sub->slug];
+                    }
                 }
             }
 
             return view('front', compact('topic', 'exam'));
         }
+
         return view('errors.expired');
     }
 
@@ -99,15 +98,17 @@ class AdminController extends Controller
             abort(403);
         }
 
-        if (!Helper::hasResult($auth)) {
+        if (! Helper::hasResult($auth)) {
             $topic = Topic::withCount('question')->where('slug', $slug)->first();
             $user_id = User::where('token', $auth)->select('id')->get();
             $started = Exam::where('user_id', $user_id[0]['id'])->select('started_at')->get();
             if (empty($started[0]['started_at'])) {
                 Exam::where('user_id', $user_id[0]['id'])->update(['started_at' => date('Y-m-d H:i:s')]);
             }
+
             return view('cover')->with('topic', $topic);
         }
+
         return view('errors.expired');
     }
 
@@ -116,14 +117,16 @@ class AdminController extends Controller
         $user_token = DB::select('select token from users');
         $user_token = array_column($user_token, 'token');
         if (in_array($id, $user_token)) {
-            if (!Helper::hasResult($id)) {
+            if (! Helper::hasResult($id)) {
                 $user = DB::select('select * from users where token = ?', [$id]);
                 $user = $user[0];
+
                 return view('home', compact('user'));
             } else {
                 return view('errors.expired');
             }
         }
+
         return view('errors.404');
     }
 
@@ -136,12 +139,12 @@ class AdminController extends Controller
         $image_get = $request->img;
         $alpha = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
         $set = '';
-        $images = array();
+        $images = [];
         $index = 0;
 
         foreach ($image_get as $image) {
             $set = substr($image->getClientOriginalName(), 0, 1);
-            $fileOriginalName = time() . '-' . $image->getClientOriginalName();
+            $fileOriginalName = time().'-'.$image->getClientOriginalName();
             $image->move('storage/question_img/', $fileOriginalName);
             $images[$index] = $fileOriginalName;
             $index++;
@@ -157,6 +160,7 @@ class AdminController extends Controller
                 $i++;
             }
         }
+
         return back()->with('added', 'Images has been uploaded');
     }
 
@@ -171,6 +175,7 @@ class AdminController extends Controller
         if ($request->ajax()) {
             return view('admin.examinees', compact('users', 'notify', 'topics'))->renderSections()['content'];
         }
+
         return view('admin.examinees', compact('users', 'notify', 'topics'));
     }
 
@@ -185,6 +190,7 @@ class AdminController extends Controller
         if ($request->ajax()) {
             return view('admin.adminlist', compact('users', 'userInfo', 'notify'))->renderSections()['content'];
         }
+
         return view('admin.adminlist', compact('users', 'userInfo', 'notify'));
     }
 
@@ -209,6 +215,7 @@ class AdminController extends Controller
         if ($request->ajax()) {
             return view('partial.result', compact('result', 'user', 'notify', 'users', 'essay'))->renderSections()['content'];
         }
+
         return view('partial.result', compact('result', 'user', 'notify', 'users', 'essay'));
     }
 
@@ -219,8 +226,10 @@ class AdminController extends Controller
         $user = $user[0];
         $data = compact('essay', 'user');
         $pdf = Pdf::loadView('partial.situationpdf', $data);
-        return $pdf->download(ucwords(str_replace(' ', '', $user->name)) . 'SE-.pdf');
+
+        return $pdf->download(ucwords(str_replace(' ', '', $user->name)).'SE-.pdf');
     }
+
     public function exportResultPDF(Request $request)
     {
         $result = DB::table('result')->where('user_id', $request->id)->select('score')->get();
@@ -228,6 +237,7 @@ class AdminController extends Controller
         $user = $user[0];
         $data = compact('result', 'user');
         $pdf = Pdf::loadView('partial.resultpdf', $data);
-        return $pdf->download(ucwords(str_replace(' ', '', $user->name)) . 'ExamResult-.pdf');
+
+        return $pdf->download(ucwords(str_replace(' ', '', $user->name)).'ExamResult-.pdf');
     }
 }

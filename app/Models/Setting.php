@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Setting extends Model
 {
     protected $fillable = [
-      'welcome_txt',
-      'logo',
-      'favicon'
+        'welcome_txt',
+        'logo',
+        'favicon',
     ];
 }

@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Mail\ExamEmail;
 use App\Mail\VerifyEmail;
-use Illuminate\Support\Facades\Hash;
-use App\Models\User;
 use App\Models\Exam;
+use App\Models\User;
 use App\Models\Verification;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
@@ -16,15 +15,16 @@ class EmailController extends Controller
 {
     public function sendmail(Request $request, $token, $name, $email, $userID)
     {
-        $user = (object)['name' => $name, 'token' => $token];
+        $user = (object) ['name' => $name, 'token' => $token];
         $input = $request->all();
         $exam = '';
         foreach ($input as $value) {
             if (is_numeric($value)) {
-                if (!empty($exam))
-                    $exam = $exam . ',' . $value;
-                else
+                if (! empty($exam)) {
+                    $exam = $exam.','.$value;
+                } else {
                     $exam = $value;
+                }
             }
         }
         Exam::updateOrCreate([
@@ -45,6 +45,7 @@ class EmailController extends Controller
 
         return redirect()->back()->with('success', 'Link sent successfully');
     }
+
     public function verifyEmail(Request $request)
     {
         $data = User::where('email', $request->input('email'))->get();
@@ -60,7 +61,6 @@ class EmailController extends Controller
                 'code' => $data['code'],
             ]);
         }
-
 
         Mail::to($request->input('email'))->send(new VerifyEmail($data));
 

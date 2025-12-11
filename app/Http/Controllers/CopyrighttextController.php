@@ -15,6 +15,7 @@ class CopyrighttextController extends Controller
     public function index()
     {
         $ct = copyrighttext::all();
+
         return view('admin.copyright.index', compact('ct'));
     }
 
@@ -31,7 +32,6 @@ class CopyrighttextController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request, $id) {}
@@ -61,7 +61,6 @@ class CopyrighttextController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  \App\copyrighttext  $copyrighttext
      * @return \Illuminate\Http\Response
      */
@@ -75,6 +74,7 @@ class CopyrighttextController extends Controller
         $ct = copyrighttext::findorfail($id);
         $ct->name = $request->name;
         $ct->save();
+
         return back()->with('success', 'Updated');
     }
 

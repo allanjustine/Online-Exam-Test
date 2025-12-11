@@ -7,9 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class Color extends Model
 {
     protected $table = 'color';
+
     protected $fillable = [
         'user_id',
-        'profile_color'
+        'profile_color',
     ];
 
     public function user()

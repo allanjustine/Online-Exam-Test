@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
@@ -27,7 +26,7 @@ class HomeController extends Controller
         $user = Auth::user();
 
         return view('home', [
-            'user' => $user
+            'user' => $user,
         ]);
     }
 }

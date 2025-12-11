@@ -16,10 +16,10 @@ class RegisterController extends Controller
         ]);
 
         User::create([
-            'name'      => $request->name,
-            'email'     => $request->email,
-            'password'  => $request->password,
-            'role'      => 'E'
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => $request->password,
+            'role' => 'E',
         ]);
 
         return to_route('login');

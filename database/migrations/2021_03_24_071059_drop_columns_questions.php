@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class DropColumnsQuestions extends Migration
 {
@@ -27,7 +27,7 @@ class DropColumnsQuestions extends Migration
     public function down()
     {
         Schema::table('questions', function (Blueprint $table) {
-             $table->dropColumn('choices');
+            $table->dropColumn('choices');
         });
     }
 }

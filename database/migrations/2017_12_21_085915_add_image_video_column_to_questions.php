@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class AddImageVideoColumnToQuestions extends Migration
 {
@@ -15,7 +15,7 @@ class AddImageVideoColumnToQuestions extends Migration
     {
         Schema::table('questions', function (Blueprint $table) {
             $table->string('question_img')->nullable();
-            $table->string('question_video_link')->nullable();   
+            $table->string('question_video_link')->nullable();
         });
     }
 

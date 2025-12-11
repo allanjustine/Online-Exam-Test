@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class Configcontroller extends Controller
 {
@@ -28,6 +27,7 @@ class Configcontroller extends Controller
             ->whereHas('result')
             ->where('notify', 1)
             ->get();
+
         return view('admin.mailsetting.mailset', compact('env_files', 'notify'));
     }
 
@@ -35,7 +35,6 @@ class Configcontroller extends Controller
     {
         $input = $request->all();
         // some code
-
 
         $env_update = $this->changeEnv([
             'MAIL_FROM_NAME' => $request->MAIL_FROM_NAME,
@@ -55,33 +54,34 @@ class Configcontroller extends Controller
         }
     }
 
-    protected function changeEnv($data = array())
+    protected function changeEnv($data = [])
     {
         if (count($data) > 0) {
 
             // Read .env-file
-            $env = file_get_contents(base_path() . '/.env');
+            $env = file_get_contents(base_path().'/.env');
 
             // Split string on every " " and write into array
-            $env = preg_split('/\n/', $env);;
+            $env = preg_split('/\n/', $env);
 
             // Loop through given data
-            foreach ((array)$data as $key => $value) {
+            foreach ((array) $data as $key => $value) {
 
                 // Loop through .env-data
                 foreach ($env as $env_key => $env_value) {
 
                     // Turn the value into an array and stop after the first split
                     // So it's not possible to split e.g. the App-Key by accident
-                    $entry = explode("=", $env_value, 2);
+                    $entry = explode('=', $env_value, 2);
 
                     // Check, if new key fits the actual .env-key
                     if ($entry[0] == $key) {
                         // If yes, overwrite it with the new one
                         if (strpos(trim($value), ' ') == true) {
-                            $env[$env_key] = $key . "=" . '"' . $value . '"';
-                        } else
-                            $env[$env_key] = $key . "=" . $value;
+                            $env[$env_key] = $key.'='.'"'.$value.'"';
+                        } else {
+                            $env[$env_key] = $key.'='.$value;
+                        }
                     } else {
                         // If not, keep the old one
                         $env[$env_key] = $env_value;
@@ -93,7 +93,7 @@ class Configcontroller extends Controller
             $env = implode("\n", $env);
 
             // And overwrite the .env with the new data
-            file_put_contents(base_path() . '/.env', $env);
+            file_put_contents(base_path().'/.env', $env);
 
             return true;
         } else {
